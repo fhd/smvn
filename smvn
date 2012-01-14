@@ -1,0 +1,18 @@
+#!/bin/bash
+# smvn - Execute Maven commands from sub directories of Maven projects
+
+pushd . &>/dev/null
+pom=""
+until [[ -n $pom || `pwd` == "/" ]]; do
+    pom=`find $(pwd) -maxdepth 1 -name "pom.xml"`
+    cd ..
+done
+popd &>/dev/null
+
+if [[ -z $pom ]]; then
+    echo "Unable to find a POM file in the current or any parent directories."
+    exit 1
+fi
+
+echo "Using POM file: $pom"
+mvn -f "$pom" $@
